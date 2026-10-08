@@ -53,11 +53,9 @@ EXTENSOES_VALIDAS = {
 
 
 def converter_png_para_pdf(arquivo: Path, destino: Path):
-    """
-    Converte um único PNG para PDF, com a página do tamanho exato da imagem.
-    """
+    
     with Image.open(arquivo) as img:
-        # PDFs não suportam transparência (canal alfa); converte pra RGB
+        # Como PDFs não suportam transparência (canal alfa); converte pra RGB
         # com fundo branco quando necessário.
         if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
             fundo = Image.new("RGB", img.size, (255, 255, 255))
@@ -82,7 +80,7 @@ def converter_pasta_atual(manter_original: bool = False):
     ]
 
     if not arquivos:
-        print("Nenhuma imagem encontrada nesta pasta.")
+        print("Nenhuma imagem encontrada.")
         return
 
     total = len(arquivos)
