@@ -1,8 +1,8 @@
 """
-Conversor de imagens para PNG (versão 3)
+Conversor de imagens para PNG
 ------------------------------------------------------
 Converte todas as imagens da PASTA ATUAL (onde o script está sendo executado)
-para o formato PNG. Não precisa informar caminho nenhum.
+para o formato PNG.
 
 Os arquivos originais são enviados para a lixeira do sistema após a conversão.
 
@@ -13,7 +13,7 @@ da menos agressiva para a mais agressiva:
     2. Redução de paleta de cores (perda mínima, quase imperceptível)
     3. Redimensionamento gradual (só como último recurso)
 
-Novidade desta versão: arquivos que já estão em .png e ultrapassam o
+Arquivos que já estão em .png e ultrapassam o
 limite também são verificados e comprimidos no lugar, mesmo que não
 precisem passar por conversão de formato.
 
@@ -49,13 +49,12 @@ except ImportError:
     print("Instale com: pip install send2trash")
     sys.exit(1)
 
-# Extensões de imagem que serão consideradas para conversão
 EXTENSOES_VALIDAS = {
     ".jpg", ".jpeg", ".bmp", ".gif", ".tiff", ".tif",
     ".webp", ".ico", ".ppm", ".pgm", ".pbm",
 }
 
-# Limite máximo de tamanho do arquivo PNG final
+# Define limite máximo de tamanho do arquivo PNG final
 LIMITE_MB = 4.15
 LIMITE_BYTES = int(LIMITE_MB * 1024 * 1024)
 
@@ -111,12 +110,7 @@ def salvar_png_respeitando_limite(img: Image.Image, destino: Path) -> str:
 
 
 def comprimir_png_existente(arquivo: Path) -> str:
-    """
-    Verifica se um PNG já existente ultrapassa o limite de tamanho e,
-    se sim, tenta comprimi-lo no lugar usando as mesmas etapas
-    (compressão máxima -> paleta de cores -> redimensionamento).
-    Retorna uma string descrevendo o que foi feito, ou None se não precisou mexer.
-    """
+
     tamanho_original = arquivo.stat().st_size
     if tamanho_original <= LIMITE_BYTES:
         return None
@@ -146,10 +140,8 @@ def comprimir_png_existente(arquivo: Path) -> str:
             img_redimensionada = img_base.resize((nova_largura, nova_altura), Image.LANCZOS)
             dados = _tamanho_em_bytes(img_redimensionada)
 
-    # Só sobrescreve se o resultado for realmente menor que o original.
-    # Escreve primeiro em um arquivo temporário e só então substitui o
-    # original de forma atômica (os.replace) — evita erros de acesso no
-    # Windows ao tentar escrever no mesmo arquivo que acabou de ser lido.
+
+#Primeiro cria arquivo tempórario e só substitui se resultado < original, usa (os.replace) pra evitar erros no windows ao tentar escrever arquivo recem lido 
     if len(dados) < tamanho_original:
         arquivo_temp = arquivo.with_name(arquivo.stem + ".tmp_compress.png")
         arquivo_temp.write_bytes(dados)
@@ -189,9 +181,7 @@ def converter_pasta_atual(manter_original: bool = False):
     if pngs_grandes:
         print(f"Encontrado(s) {len(pngs_grandes)} PNG(s) já existente(s) acima de {LIMITE_MB} MB. Comprimindo...\n")
         for png in pngs_grandes:
-            # Tenta até 3 vezes: em alguns sistemas (principalmente Windows),
-            # o arquivo pode estar momentaneamente bloqueado por outro
-            # processo (antivírus, explorer, etc.) logo após ser lido.
+        # Tenta até 3 vezes
             ultimo_erro = None
             for tentativa in range(1, 4):
                 try:
