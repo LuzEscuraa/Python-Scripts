@@ -1,5 +1,5 @@
 import os
-
+#Script criado pra enumerar imagens de whatsapp em uma pasta seguindo a ordem de data/hora no nome do arquivo
 
 PASTA = r#"c:insira o caminho da pasta aqui"
 
